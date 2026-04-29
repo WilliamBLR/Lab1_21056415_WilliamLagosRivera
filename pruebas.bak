@@ -16,11 +16,6 @@ RF01: Especificar cada TDA
 |#
 
 
-
-
-
-(carta-trainer? c3)
-
 ;; Enumeración de tipos de carta
 (define CARD-TYPE '(pokemon energy trainer))
 (define (card-type? t)
@@ -50,7 +45,4 @@ RF01: Especificar cada TDA
 
 
 
-
-
-
-
+;Primer TDA

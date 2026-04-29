@@ -1,7 +1,7 @@
 #lang racket
 
 
-
+#lang racket
 
 
 ;Extraigo cada una de las funciones dadas en el enunciado
