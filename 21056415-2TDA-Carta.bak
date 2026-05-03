@@ -1,11 +1,21 @@
 #lang racket
 
 
+
+
+
 ;Extraigo cada una de las funciones dadas en el enunciado
 #|
+
+
 Funciones que me dan en mi archivo
+
+
+
 |#
-(require "21056415-2base.rkt") 
+(require "pruebas.rkt") 
+
+
 
 ;Funciones que llevare a mi archivo base, es decir, creare en mi TDA todas estas funciones que seran utilizadas en el futuro
 (provide make-carta
@@ -17,6 +27,8 @@ Funciones que me dan en mi archivo
          carta-pokemon?
          carta-energy?
          carta-trainer?
+
+
 
 )
 

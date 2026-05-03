@@ -1,0 +1,161 @@
+#lang racket
+
+;TDA-ACCION
+
+(require "21056415-2base.rkt")
+(require "21056415-2TDA-Energia.rkt")
+
+
+(provide make-accion
+         accion?
+         accion-nombre
+         accion-costo
+         accion-dano
+         accion-efecto
+         set-accion-dano
+         set-accion-efecto)
+#|
+
+Para abordar este TDA primero pense que una accion dentro del juego puede representar un ataque o algun efecto que realiza una
+carta
+Como mas adelante una criatura va a tener ataques, necesitouna estructura que guarde la informacion basica de cada accion, la accion debe guardar:
+un nombre para cachar que ataque es
+un costo, que corresponde a una lista de energias 
+un dano base, que sera usado despues para calcular el dano final.
+un efecto, que puede ser algo como paralizar, envenenar o quizas ninguno
+
+
+(list 'accion nombre costo daño efecto)
+
+
+ 'accion identifica que esta lista pertenece al TDA accion.
+ nombre es un simbolo, por ejemplo 'impactrueno.
+ costo es una lista, normalmente con energias.
+ daño es un numero mayor o igual a 0.
+ efecto es un simbolo
+
+
+|#
+
+;constructor: make-accion, una funcion que crea una accion cuando se entregan X datos
+
+(define (make-accion nombre costo dano efecto)
+  (if (and
+
+
+       (symbol? nombre) ;verificamos que sea un simbolo
+
+
+       (list? costo) ;verificamos que sea una lista
+
+       ; y de aca seguimos verificamdno
+
+
+       (number? dano)
+
+
+       (>= dano 0)
+
+
+       (symbol? efecto))
+      
+      (list 'accion nombre costo dano efecto) ;Al ser todas las verificaciones verdaereos construyo mi lista representacion, ahora si alguno no es retorna f
+
+
+
+
+
+
+      
+      #f))
+
+
+
+;pertentencia, solo verifica que el dato que otorgo sea una accion o no
+
+
+
+(define (accion? a)
+  (and (list? a) ;lista
+       (= (length a) 5) ;el largo
+       (equal? (car a) 'accion) ;el primer elemento sea accion o no
+
+       ; y asi seguimos con cada verificacion
+       (symbol? (cadr a))
+       (list? (caddr a))
+       (number? (cadddr a))
+       (>= (cadddr a) 0)
+       (symbol? (list-ref a 4)))) 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+;selectodres
+
+;En palabras simples, voy extrayendo cada uno de los datos de mi lista, accion nombre me da el nombre, costo el costo y asi
+
+
+(define (accion-nombre a)
+  (if (accion? a)
+      (cadr a)
+      #f))
+
+(define (accion-costo a)
+  (if (accion? a)
+      (caddr a)
+      #f))
+
+(define (accion-dano a)
+  (if (accion? a)
+      (cadddr a)
+      #f))
+
+(define (accion-efecto a)
+  (if (accion? a)
+      (list-ref a 4)
+      #f))
+
+
+;modificacodresPer
+
+;Recibimos una accion y le otorgamos un daño nuevo
+; Entonces, lo primero que hago es validar que sea una accion valida, que sea un numero y que no se anegativo, luego, creo la accion con los dats modificados
+
+
+
+(define (set-accion-dano a nuevo-dano)
+  (if (and (accion? a)
+           (number? nuevo-dano)
+           (>= nuevo-dano 0))
+      (make-accion (accion-nombre a)
+                   (accion-costo a)
+                   nuevo-dano
+                   (accion-efecto a))
+      #f))
+
+;  hago lo mismo pero con los efectos
+(define (set-accion-efecto a nuevo-efecto)
+  (if (and (accion? a)
+           (symbol? nuevo-efecto))
+      (make-accion (accion-nombre a)
+                   (accion-costo a)
+                   (accion-dano a)
+                   nuevo-efecto)
+      #f))
