@@ -1,18 +1,42 @@
 #lang racket
 
-
 (require "21056415-2TDA-Jugador.rkt")
+(require "21056415-2TDA-Accion.rkt")
+(require "21056415-2TDA-Criatura.rkt")
+(require "21056415-2TDA-Energia.rkt")
 (require "21056415-2TDA-Estado-Juego.rkt")
+(require "21056415-2TDA-Usar-Accion.rkt")
+(require "21056415-2TDA-Ataque.rkt")
 
+(define pikachu
+  (make-criatura 'pikachu
+                 'lightning
+                 60
+                 60
+                 (list (make-ataque 'impactrueno
+                                   (list (make-energia 'lightning-energy))
+                                   30
+                                   'paralizar))
+                 '()
+                 'normal
+                 1))
 
-(define j1 (make-jugador 'ash '() '() '() '() '() '()))
-(define j2 (make-jugador 'misty '() '() '() '() '() '()))
+(define misty
+  (make-jugador 'misty '() '() '() '() '() '()))
 
 (define partida
-  (make-estado-juego j1 j2 1 '()))
+  (make-estado-juego pikachu misty 1 '()))
 
-partida
-(estado-juego? partida)
-(estado-juego-turno partida)
-(set-estado-turno partida 2)
-(set-estado-ganador partida 'ash)
+(define ataque1
+  (make-ataque 'impactrueno
+               (list (make-energia 'lightning-energy))
+               30
+               'paralizar))
+
+(define ataque-accion
+  (make-usar-accion pikachu misty ataque1))
+
+;; Verificando los datos de la acción
+(displayln (usar-accion-atacante ataque-accion))  ; pikachu
+(displayln (usar-accion-defensor ataque-accion))  ; misty
+(displayln (usar-accion-accion ataque-accion))  ; impactrueno
