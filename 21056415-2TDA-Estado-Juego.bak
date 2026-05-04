@@ -1,0 +1,15 @@
+
+;TDA-JUGADOR
+
+#lang racket
+
+(require "21056415-2TDA-Jugador.rkt")
+
+(provide make-estado-juego
+         estado-juego?
+         estado-juego-jugador1
+         estado-juego-jugador2
+         estado-juego-turno
+         estado-juego-ganador
+         set-estado-turno
+         set-estado-ganador)

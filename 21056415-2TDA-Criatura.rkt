@@ -1,0 +1,188 @@
+#lang racket
+
+
+(require "21056415-2base.rkt")
+(require "21056415-2TDA-Accion.rkt")
+(require "21056415-2TDA-Energia.rkt")
+
+;Todas las cosas que hara criatura
+(provide make-criatura
+         criatura?
+         criatura-nombre
+         criatura-tipo
+         criatura-ps-max
+         criatura-ps-actual
+         criatura-acciones
+         criatura-energias
+         criatura-estado
+         criatura-id
+         set-criatura-ps-actual
+         set-criatura-energias
+         set-criatura-estado
+         criatura-derrotada?)
+
+
+
+
+#|
+
+Representacion
+
+(list 'criatura nombre tipo ps-max ps-actual acciones energias estado id)
+
+Donde:
+- 'criatura identifica el TDA.¿
+- nombre es un simbolo, por ejemplo 'pikachu
+- tipo debe pertenecer a ELEMENT-TYPE.
+- ps-max es la vida maxima
+- ps-actual es la vida actual
+- acciones es una lista de acciones
+- energias es una lista de energias unidas
+- estado es un simbolo, por ejemplo 'normal o 'paralizado
+- id es un numero que permite diferenciar criaturas iguales
+
+
+|#
+
+
+;;Constructor
+;;Crea una criatura solo si los datos entregados son validos.
+
+(define (make-criatura nombre tipo ps-max ps-actual acciones energias estado id)
+  (if (and (symbol? nombre)
+           (element-type? tipo)
+           (number? ps-max)
+           (> ps-max 0)
+           (number? ps-actual)
+           (>= ps-actual 0)
+           (<= ps-actual ps-max)
+           (list? acciones)
+           (list? energias)
+           (symbol? estado)
+           (number? id)
+           (>= id 0))
+
+
+
+
+      
+      (list 'criatura nombre tipo ps-max ps-actual acciones energias estado id)
+      #f))
+
+
+;;Funcion de pertenencia
+;;Verifica si un dato tiene la forma correcta de una criatura.
+
+(define (criatura? c)
+  (and (list? c)
+       (= (length c) 9)
+       (equal? (car c) 'criatura)
+       (symbol? (cadr c))
+       (element-type? (caddr c))
+       (number? (cadddr c))
+       (> (cadddr c) 0)
+       (number? (list-ref c 4))
+       (>= (list-ref c 4) 0)
+       (<= (list-ref c 4) (cadddr c))
+       (list? (list-ref c 5))
+       (list? (list-ref c 6))
+       (symbol? (list-ref c 7))
+       (number? (list-ref c 8))
+       (>= (list-ref c 8) 0)))
+
+
+;;Selectores
+;;Extraen datos especificos de la criatura.
+
+(define (criatura-nombre c)
+  (if (criatura? c)
+      (cadr c)
+      #f))
+
+(define (criatura-tipo c)
+  (if (criatura? c)
+      (caddr c)
+      #f))
+
+(define (criatura-ps-max c)
+  (if (criatura? c)
+      (cadddr c)
+      #f))
+
+(define (criatura-ps-actual c)
+  (if (criatura? c)
+      (list-ref c 4)
+      #f))
+
+(define (criatura-acciones c)
+  (if (criatura? c)
+      (list-ref c 5)
+      #f))
+
+(define (criatura-energias c)
+  (if (criatura? c)
+      (list-ref c 6)
+      #f))
+
+(define (criatura-estado c)
+  (if (criatura? c)
+      (list-ref c 7)
+      #f))
+
+(define (criatura-id c)
+  (if (criatura? c)
+      (list-ref c 8)
+      #f))
+
+
+;;Modificadores
+;;Creamos una nueva criatura con el dato actualizado
+
+(define (set-criatura-ps-actual c nuevo-ps)
+  (if (and (criatura? c)
+           (number? nuevo-ps)
+           (>= nuevo-ps 0)
+           (<= nuevo-ps (criatura-ps-max c)))
+      (make-criatura (criatura-nombre c)
+                     (criatura-tipo c)
+                     (criatura-ps-max c)
+                     nuevo-ps
+                     (criatura-acciones c)
+                     (criatura-energias c)
+                     (criatura-estado c)
+                     (criatura-id c))
+      #f))
+
+(define (set-criatura-energias c nuevas-energias)
+  (if (and (criatura? c)
+           (list? nuevas-energias))
+      (make-criatura (criatura-nombre c)
+                     (criatura-tipo c)
+                     (criatura-ps-max c)
+                     (criatura-ps-actual c)
+                     (criatura-acciones c)
+                     nuevas-energias
+                     (criatura-estado c)
+                     (criatura-id c))
+      #f))
+
+(define (set-criatura-estado c nuevo-estado)
+  (if (and (criatura? c)
+           (symbol? nuevo-estado))
+      (make-criatura (criatura-nombre c)
+                     (criatura-tipo c)
+                     (criatura-ps-max c)
+                     (criatura-ps-actual c)
+                     (criatura-acciones c)
+                     (criatura-energias c)
+                     nuevo-estado
+                     (criatura-id c))
+      #f))
+
+
+;;
+;;Verifica si la criatura ya no tiene PS.
+
+(define (criatura-derrotada? c)
+  (and (criatura? c)
+       (= (criatura-ps-actual c) 0)))
