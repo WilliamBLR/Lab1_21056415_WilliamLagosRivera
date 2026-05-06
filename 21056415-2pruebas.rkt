@@ -36,7 +36,13 @@
 (define ataque-accion
   (make-usar-accion pikachu misty ataque1))
 
-;; Verificando los datos de la acción
+;; Verificar que los datos sean correctos
+(displayln (criatura? pikachu))  ; #t
+(displayln (criatura? misty))    ; #t
+(displayln (ataque? ataque1))    ; #t
+(displayln (usar-accion? ataque-accion))  ; #t
+
+;; Verificar que los selectores devuelvan lo esperado
 (displayln (usar-accion-atacante ataque-accion))  ; pikachu
 (displayln (usar-accion-defensor ataque-accion))  ; misty
 (displayln (usar-accion-accion ataque-accion))  ; impactrueno
