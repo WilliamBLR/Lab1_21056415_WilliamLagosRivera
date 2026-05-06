@@ -1,11 +1,11 @@
 #lang racket
-
-
+;RF02
+;tda usar accion
 (require "21056415-2TDA-Jugador.rkt")
 (require "21056415-2TDA-Criatura.rkt")
 (require "21056415-2TDA-Accion.rkt")
 (require "21056415-2TDA-Energia.rkt")
-(require "21056415-2TDA-Estado-Juego.rkt")
+(require "21056415-2TDA-Estado-Juego.rkt") ; Descomentar cuando lo tengas listo
 (require "21056415-2TDA-Ataque.rkt")
 
 (provide make-usar-accion
@@ -16,25 +16,20 @@
          set-usar-accion-resultado)
 
 #|
-Este TDA representa el momento en que un jugador usa un ataque.
-
 Debe guardar:
 - atacante: la criatura que realiza el ataque
 - defensor: la criatura que recibe el ataque
 - accion: el ataque usado
 
 Representación:
-
 (list 'usar-accion atacante defensor accion)
-
-
 |#
 
 ;; Constructor
 (define (make-usar-accion atacante defensor accion)
   (if (and (criatura? atacante)
            (criatura? defensor)
-           (ataque? accion))
+           (attack? accion)) ; <--- Validación usando el nuevo TDA Attack
       (list 'usar-accion atacante defensor accion)
       #f))
 
@@ -45,7 +40,7 @@ Representación:
        (equal? (car u) 'usar-accion)
        (criatura? (cadr u))
        (criatura? (caddr u))
-       (ataque? (list-ref u 3))))
+       (attack? (list-ref u 3))))
 
 ;; Selectores
 (define (usar-accion-atacante u)
@@ -64,7 +59,6 @@ Representación:
       #f))
 
 ;; Modificadores
-
 (define (set-usar-accion-resultado u resultado)
   (if (usar-accion? u)
       (make-usar-accion (usar-accion-atacante u)

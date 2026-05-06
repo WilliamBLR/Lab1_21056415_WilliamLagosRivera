@@ -47,8 +47,10 @@
   (if (energia? e)
       (caddr e)
       #f))
-
+;pequeña modificacion para hacer compatible con RF03
 (define (energia->carta e)
   (if (energia? e)
-      (make-carta 'energy e)
+      (card 'energy 
+            (symbol->string (energia-nombre e)) 
+            (energia-tipo e))
       #f))

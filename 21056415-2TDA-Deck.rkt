@@ -1,0 +1,68 @@
+#lang racket
+
+(require "21056415-2base.rkt")
+(require "21056415-2TDA-Carta.rkt")
+
+(provide deck
+         deck?
+         deck-cartas)
+
+#|
+
+Representacion: (list 'deck (list carta1 carta2 ... carta60))
+|#
+
+;Auxiliares
+
+;Revisa si hay al menos un Pokemon basico en la lista
+(define (contiene-pokemon-basico? lista)
+  (if (null? lista)
+      #f
+      (if (and (carta-pokemon? (car lista)) 
+               (null? (card-evoluciona-de (car lista))))
+          #t
+          (contiene-pokemon-basico? (cdr lista)))))
+
+;Cuenta cuantas veces aparece un nombre en la lista
+(define (contar-nombre nombre lista)
+  (if (null? lista)
+      0
+      (if (equal? nombre (card-nombre (car lista)))
+          (+ 1 (contar-nombre nombre (cdr lista)))
+          (contar-nombre nombre (cdr lista)))))
+
+;Valida la regla de las 4 copias 
+(define (validar-copias? lista original)
+  (if (null? lista)
+      #t
+      (if (carta-energy? (car lista))
+          (validar-copias? (cdr lista) original) ;las energias no tienen limite
+          (if (<= (contar-nombre (card-nombre (car lista)) original) 4)
+              (validar-copias? (cdr lista) original)
+              #f))))
+
+;--- Constructor ---
+
+;Crea un mazo de 60 cartas validando reglas de cantidad, copias y contenido
+;Dom: cartas 
+;Rec: deck (lista) o #f
+(define (deck . cartas)
+  (if (and (= (length cartas) 60) ;regla: exactamente 60 cartas
+           (contiene-pokemon-basico? cartas) ;regla: al menos 1 Pokemon basico
+           (validar-copias? cartas cartas)) ;regla: maximo 4 copias (no energia)
+      (list 'deck cartas)
+      #f))
+
+;Pertenencia
+
+;comprueba que la estructura corresponda a un mazo de 60 cartas
+(define (deck? d)
+  (and (list? d)
+       (= (length d) 2)
+       (equal? (car d) 'deck)
+       (list? (cadr d))
+       (= (length (cadr d)) 60)))
+
+;Selector util para obtener la lista de cartas
+(define (deck-cartas d)
+  (if (deck? d) (cadr d) #f))

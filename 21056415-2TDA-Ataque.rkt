@@ -1,79 +1,61 @@
 #lang racket
+;RF02
+(require "21056415-2base.rkt")
 
-
-(require "21056415-2TDA-Energia.rkt")
-
-(provide make-ataque
-         ataque?
-         ataque-nombre
-         ataque-costo
-         ataque-dano
-         ataque-efecto)
+(provide attack
+         attack?
+         attack-cost
+         attack-name
+         attack-text
+         attack-function)
 
 #|
-=========================================================
-TDA ataque
-=========================================================
-Un ataque dentro del juego representa un movimiento realizado
-por una criatura. Este ataque tiene:
-- un nombre (ej. "impactrueno")
-- un costo (energías necesarias)
-- un daño base
-- un efecto (ej. paralizar)
 
 Representación:
+(list 'attack cost name text function)
 
-(list 'ataque nombre costo dano efecto)
-
-Funciones utilizadas:
-- list: para crear el ataque.
-- symbol?: para verificar nombre y efecto.
-- list?: para verificar que el costo sea una lista.
-- number?: para verificar que el daño sea un número.
-
+- cost: Lista de símbolos (ej: '(psychic colorless))
+- name: String con el nombre del ataque[cite: 4]
+- text: String con la descripción del ataque[cite: 4]
+- function: Función de orden superior que ejecuta el daño/efecto[cite: 4]
 |#
 
-;;Constructor
-
-;Verificaciones para no crear cosas invalidad.
-;
-(define (make-ataque nombre costo dano efecto)
-  (if (and (symbol? nombre)
-           (list? costo)
-           (number? dano)
-           (>= dano 0)
-           (symbol? efecto))
-      (list 'ataque nombre costo dano efecto)
+;; Constructor
+(define (attack cost name text function)
+  (if (and (list? cost)
+           (string? name)
+           (string? text)
+           (procedure? function)) ; Verifica que el 4to argumento sea una función[cite: 4]
+      (list 'attack cost name text function)
       #f))
 
-;;Función de pertenencia
-(define (ataque? a)
+;; Función de pertenencia
+(define (attack? a)
   (and (list? a)
        (= (length a) 5)
-       (equal? (car a) 'ataque)
-       (symbol? (cadr a))
-       (list? (caddr a))
-       (number? (cadddr a))
-       (>= (cadddr a) 0)
-       (symbol? (list-ref a 4))))
+       (equal? (car a) 'attack)
+       (list? (cadr a))
+       (string? (caddr a))
+       (string? (cadddr a))
+       (procedure? (list-ref a 4))))
 
 ;; Selectores
-(define (ataque-nombre a)
-  (if (ataque? a)
+(define (attack-cost a)
+  (if (attack? a)
       (cadr a)
       #f))
 
-(define (ataque-costo a)
-  (if (ataque? a)
+(define (attack-name a)
+  (if (attack? a)
       (caddr a)
       #f))
 
-(define (ataque-dano a)
-  (if (ataque? a)
+(define (attack-text a)
+  (if (attack? a)
       (cadddr a)
       #f))
 
-(define (ataque-efecto a)
-  (if (ataque? a)
+(define (attack-function a)
+  (if (attack? a)
       (list-ref a 4)
       #f))
