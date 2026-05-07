@@ -1,6 +1,6 @@
+
+
 #lang racket
-
-
 
 (require "21056415-2base.rkt")
 (require "21056415-2TDA-Carta.rkt")
@@ -15,16 +15,14 @@
          jugador-banca
          jugador-descarte
          jugador-premios
+         set-jugador-mazo
          set-jugador-mano
          set-jugador-activo
-         set-jugador-banca)
+         set-jugador-banca
+         set-jugador-premios)
 
 #|
-
-
-
-
-Debe guardar:
+debe guardar:
 - su nombre
 - su mazo
 - las cartas que tiene en mano
@@ -33,87 +31,99 @@ Debe guardar:
 - cartas descartadas
 - premios
 
-Representacion:
-
+representacion:
 (list 'jugador nombre mazo mano activo banca descarte premios)
-
-
 |#
 
-;;Constructor
+;;constructor
 
-;Nuevamente y al igual que en todo verificamos toooodooo
+;crea un jugador validando cada uno de sus componentes iniciales
 (define (make-jugador nombre mazo mano activo banca descarte premios)
-  (if (and (symbol? nombre)
+  (if (and (string? nombre)
            (list? mazo)
            (list? mano)
-           (or (criatura? activo) (equal? activo '()))
+           (or (criatura? activo) (null? activo))
            (list? banca)
            (list? descarte)
            (list? premios))
       (list 'jugador nombre mazo mano activo banca descarte premios)
       #f))
 
+;;pertenencia
 
-;;Pertenencia
-
+;verifica que la estructura sea una lista de jugador valida con 8 elementos
 (define (jugador? j)
   (and (list? j)
        (= (length j) 8)
        (equal? (car j) 'jugador)
-       (symbol? (cadr j))
+       (string? (cadr j))
        (list? (caddr j))
        (list? (list-ref j 3))
-       (or (criatura? (list-ref j 4))
-           (equal? (list-ref j 4) '()))
        (list? (list-ref j 5))
        (list? (list-ref j 6))
        (list? (list-ref j 7))))
 
+;;selectores
 
-;;Selectores
-
+;obtiene el nombre del jugador
 (define (jugador-nombre j)
   (if (jugador? j)
       (cadr j)
       #f))
 
+;obtiene el mazo del jugador
 (define (jugador-mazo j)
   (if (jugador? j)
       (caddr j)
       #f))
 
+;obtiene la lista de cartas en la mano
 (define (jugador-mano j)
   (if (jugador? j)
       (list-ref j 3)
       #f))
 
+;obtiene la criatura que esta en el puesto activo
 (define (jugador-activo j)
   (if (jugador? j)
       (list-ref j 4)
       #f))
 
+;obtiene la lista de criaturas en la banca
 (define (jugador-banca j)
   (if (jugador? j)
       (list-ref j 5)
       #f))
 
+;obtiene la pila de cartas descartadas
 (define (jugador-descarte j)
   (if (jugador? j)
       (list-ref j 6)
       #f))
 
+;obtiene la lista de cartas de premio
 (define (jugador-premios j)
   (if (jugador? j)
       (list-ref j 7)
       #f))
 
+;;modificadores
 
-;;Modificadores
+;actualiza el mazo del jugador
+(define (set-jugador-mazo j nuevo-mazo)
+  (if (and (jugador? j) (list? nuevo-mazo))
+      (make-jugador (jugador-nombre j)
+                    nuevo-mazo
+                    (jugador-mano j)
+                    (jugador-activo j)
+                    (jugador-banca j)
+                    (jugador-descarte j)
+                    (jugador-premios j))
+      #f))
 
+;actualiza la mano del jugador
 (define (set-jugador-mano j nueva-mano)
-  (if (and (jugador? j)
-           (list? nueva-mano))
+  (if (and (jugador? j) (list? nueva-mano))
       (make-jugador (jugador-nombre j)
                     (jugador-mazo j)
                     nueva-mano
@@ -123,9 +133,9 @@ Representacion:
                     (jugador-premios j))
       #f))
 
+;actualiza la criatura activa
 (define (set-jugador-activo j nuevo-activo)
-  (if (and (jugador? j)
-           (or (criatura? nuevo-activo) (equal? nuevo-activo '())))
+  (if (and (jugador? j) (or (criatura? nuevo-activo) (null? nuevo-activo)))
       (make-jugador (jugador-nombre j)
                     (jugador-mazo j)
                     (jugador-mano j)
@@ -135,9 +145,9 @@ Representacion:
                     (jugador-premios j))
       #f))
 
+;actualiza la banca del jugador
 (define (set-jugador-banca j nueva-banca)
-  (if (and (jugador? j)
-           (list? nueva-banca))
+  (if (and (jugador? j) (list? nueva-banca))
       (make-jugador (jugador-nombre j)
                     (jugador-mazo j)
                     (jugador-mano j)
@@ -145,4 +155,16 @@ Representacion:
                     nueva-banca
                     (jugador-descarte j)
                     (jugador-premios j))
+      #f))
+
+;actualiza los premios del jugador
+(define (set-jugador-premios j nuevos-premios)
+  (if (and (jugador? j) (list? nuevos-premios))
+      (make-jugador (jugador-nombre j)
+                    (jugador-mazo j)
+                    (jugador-mano j)
+                    (jugador-activo j)
+                    (jugador-banca j)
+                    (jugador-descarte j)
+                    nuevos-premios)
       #f))
