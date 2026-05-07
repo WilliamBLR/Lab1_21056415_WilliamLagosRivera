@@ -1,5 +1,3 @@
-
-
 #lang racket
 
 (require "21056415-2base.rkt")
@@ -42,7 +40,7 @@ representacion:
   (if (and (string? nombre)
            (list? mazo)
            (list? mano)
-           (or (criatura? activo) (null? activo))
+           (or (carta-pokemon? activo) (null? activo)) ; <--- SE CAMBIO criatura? POR carta-pokemon?
            (list? banca)
            (list? descarte)
            (list? premios))
@@ -135,7 +133,7 @@ representacion:
 
 ;actualiza la criatura activa
 (define (set-jugador-activo j nuevo-activo)
-  (if (and (jugador? j) (or (criatura? nuevo-activo) (null? nuevo-activo)))
+  (if (and (jugador? j) (or (carta-pokemon? nuevo-activo) (null? nuevo-activo))) ; <--- SE CAMBIO criatura? POR carta-pokemon?
       (make-jugador (jugador-nombre j)
                     (jugador-mazo j)
                     (jugador-mano j)

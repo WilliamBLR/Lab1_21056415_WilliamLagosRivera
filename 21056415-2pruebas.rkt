@@ -23,7 +23,7 @@
 (define ener (card 'energy "Energia Electrica" 'lightning))
 (define pocion (card 'trainer "Superpocion" "objeto" "curar" accion-dummy))
 
-(displayln "--- pruebas rf04: deck ---")
+(displayln "pruebas rf04: deck")
 
 (define lista-valida
   (append (repetir-carta 4 pika)
@@ -33,7 +33,7 @@
 (define mazo1 (apply deck lista-valida))
 (displayln (if (deck? mazo1) "mazo 1: valido" "mazo 1: error"))
 
-(displayln "--- pruebas rf05: shuffle ---")
+(displayln "pruebas rf05: shuffle")
 
 ;probamos barajar el mazo 1 con una semilla cualquiera
 (define mazo-barajado (shuffleDeck mazo1 12345))
@@ -48,7 +48,7 @@
                "resultado: el orden de las cartas cambio"
                "resultado: el orden se mantuvo o mala suerte en el azar"))
 
-(displayln "--- pruebas rf06: initGame ---")
+(displayln "pruebas rf06")
 
 ;creamos un segundo mazo valido usando la misma lista del rf04 para simplificar
 (define mazo2 (apply deck lista-valida))
@@ -72,7 +72,7 @@
 (displayln "turno inicial asignado al jugador:")
 (displayln (juego-turno juego-inicial))
 
-(displayln "--- pruebas rf07: printGame ---")
+(displayln "pruebas rf07: printGame")
 
 ;generamos el string pidiendo ver la perspectiva del jugador de turno inicial
 (define vista-jugador (printGame juego-inicial (juego-turno juego-inicial)))
@@ -80,7 +80,7 @@
 ;lo imprimimos en la consola usando displayln
 (displayln vista-jugador)
 
-(displayln "--- pruebas rf08: playToBench ---")
+(displayln "pruebas rf08: playToBench")
 
 
 
@@ -108,3 +108,43 @@
 
 ;imprimimos el tablero del jugador de turno para verificar que la carta ya no esta en su mano y paso a su banca
 (displayln (printGame juego-post-banca turno-actual))
+
+
+
+(displayln "pruebas rf09: changeActivePokemon")
+
+;identificamos al jugador en turno del estado anterior
+(define turno-rf09 (juego-turno juego-post-banca))
+(define jugador-rf09 (if (= turno-rf09 1) (juego-jugador1 juego-post-banca) (juego-jugador2 juego-post-banca)))
+
+;extraemos a nuestro pokemon directamente desde la primera posicion de la banca
+(define carta-para-activo (car (jugador-banca jugador-rf09)))
+
+(displayln (string-append "jugador " (number->string turno-rf09) " movera al puesto activo a: " (card-nombre carta-para-activo)))
+
+;ejecutamos la jugada rf09
+(define juego-post-activo (changeActivePokemon juego-post-banca carta-para-activo))
+
+;imprimimos el tablero para verificar que la banca quedo vacia y el pokemon esta activo
+(displayln (printGame juego-post-activo turno-rf09))
+
+
+
+(displayln "--- pruebas rf10: drawCardFromDeck ---")
+
+;identificamos al jugador en turno del estado anterior
+(define turno-rf10 (juego-turno juego-post-activo))
+(define jugador-rf10 (if (= turno-rf10 1) (juego-jugador1 juego-post-activo) (juego-jugador2 juego-post-activo)))
+
+(displayln (string-append "cartas en mano antes de robar: " (number->string (length (jugador-mano jugador-rf10)))))
+(displayln (string-append "cartas en mazo antes de robar: " (number->string (length (deck-cartas (jugador-mazo jugador-rf10))))))
+
+;ejecutamos la jugada rf10
+(define juego-post-robo (drawCardFromDeck juego-post-activo))
+
+;extraemos al jugador actualizado para comprobar los cambios
+(define jugador-robado (if (= turno-rf10 1) (juego-jugador1 juego-post-robo) (juego-jugador2 juego-post-robo)))
+
+(displayln "--- despues de usar drawCardFromDeck ---")
+(displayln (string-append "cartas en mano ahora: " (number->string (length (jugador-mano jugador-robado)))))
+(displayln (string-append "cartas en mazo ahora: " (number->string (length (deck-cartas (jugador-mazo jugador-robado))))))
