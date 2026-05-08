@@ -10,7 +10,7 @@
 (require "21056415-2TDA-Print.rkt")
 (require "21056415-2TDA-Jugadas.rkt")
 
-;funcion auxiliar para generar una lista con n copias de una carta
+;funcion auxiliar para generar una lista con X copias de una carta
 (define (repetir-carta n c)
   (if (= n 0)
       '()
@@ -148,3 +148,62 @@
 (displayln "--- despues de usar drawCardFromDeck ---")
 (displayln (string-append "cartas en mano ahora: " (number->string (length (jugador-mano jugador-robado)))))
 (displayln (string-append "cartas en mazo ahora: " (number->string (length (deck-cartas (jugador-mazo jugador-robado))))))
+
+
+(displayln "--- pruebas rf11: useEnergyCard ---")
+
+;identificamos al jugador en turno del estado anterior
+(define turno-rf11 (juego-turno juego-post-robo))
+(define jugador-rf11 (if (= turno-rf11 1) (juego-jugador1 juego-post-robo) (juego-jugador2 juego-post-robo)))
+
+;buscamos una energia en la mano para usar
+(define (encontrar-energia mano)
+  (if (null? mano)
+      #f
+      (if (carta-energy? (car mano))
+          (car mano)
+          (encontrar-energia (cdr mano)))))
+
+(define carta-energia (encontrar-energia (jugador-mano jugador-rf11)))
+;usaremos el pokemon que pusimos en la zona activa en el rf09
+(define pokemon-objetivo (jugador-activo jugador-rf11))
+
+(displayln (string-append "jugador " (number->string turno-rf11) " le pondra la " (card-nombre carta-energia) " a " (card-nombre pokemon-objetivo)))
+
+;ejecutamos la jugada rf11
+(define juego-post-energia (useEnergyCard juego-post-robo pokemon-objetivo carta-energia))
+
+;imprimimos el tablero para verificar que el pokemon tiene la energia y la mano bajo en 1
+(displayln (printGame juego-post-energia turno-rf11))
+
+
+
+(displayln "--- pruebas rf12: evolvePokemon ---")
+
+(displayln "--- pruebas rf12: evolvePokemon ---")
+
+; 1. Creamos la carta de raichu para la prueba (evoluciona de Pikachu)
+(define raichu-prueba (card 'pokemon "Raichu" "Pikachu" 100 'lightning 'fighting null 1 #f null (list atk-dummy)))
+
+; 2. Identificamos al jugador actual desde el ÚLTIMO estado (juego-post-energia)
+(define turno-rf12 (juego-turno juego-post-energia))
+(define jugador-rf12 (if (= turno-rf12 1) (juego-jugador1 juego-post-energia) (juego-jugador2 juego-post-energia)))
+
+; 3. EXTRAEMOS EL PIKACHU ACTUALIZADO (el que ya tiene la energía puesta)
+(define pikachu-actualizado (jugador-activo jugador-rf12))
+
+; 4. Le inyectamos el Raichu a la mano a la fuerza para garantizar la prueba
+(define mano-con-raichu (cons raichu-prueba (jugador-mano jugador-rf12)))
+(define jugador-trucado (let ((jugador-temporal (set-jugador-mano jugador-rf12 mano-con-raichu))) jugador-temporal))
+
+(define juego-trucado (if (= turno-rf12 1) 
+                          (set-juego-jugador1 juego-post-energia jugador-trucado)
+                          (set-juego-jugador2 juego-post-energia jugador-trucado)))
+
+(displayln (string-append "jugador " (number->string turno-rf12) " evolucionara a Pikachu en Raichu"))
+
+; 5. Ejecutamos la jugada rf12 pasando el pikachu-actualizado
+(define juego-post-evolucion (evolvePokemon juego-trucado pikachu-actualizado raichu-prueba))
+
+; 6. Imprimimos el tablero final
+(displayln (printGame juego-post-evolucion turno-rf12))

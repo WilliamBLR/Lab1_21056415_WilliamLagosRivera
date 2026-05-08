@@ -41,7 +41,27 @@
 
 
 
-;descripcion: formatea los datos de un pokemon (incluye estados simulados que pide el pdf)
+;descripcion: formatea los datos de un pokemon
+
+
+;Parte del codigo comentada para correcion de error con respecto al RF11, reconstruire esa funcion para leer de manera correcta
+;el daño y el estado real de la carta
+
+#|(define (format-pokemon p)
+  (if (or (null? p) (not p))
+      "ninguno\n"
+      (string-append (seguro->string (list-ref p 2)) " "
+                     (seguro->string (list-ref p 4)) "PS "
+                     "tipo: " (seguro->string (list-ref p 5)) " "
+                     (if (null? (list-ref p 3)) "(basico)" "(evolucion)") "\n"
+                     "    debilidad: " (seguro->string (list-ref p 6))
+                     " | resistencia: " (seguro->string (list-ref p 7)) "\n"
+                     "    energias: 0 | daño: 0 | estado: normal\n")))|#
+
+
+
+
+;descripcion: formatea los datos de un pokemon
 (define (format-pokemon p)
   (if (or (null? p) (not p))
       "ninguno\n"
@@ -51,29 +71,32 @@
                      (if (null? (list-ref p 3)) "(basico)" "(evolucion)") "\n"
                      "    debilidad: " (seguro->string (list-ref p 6))
                      " | resistencia: " (seguro->string (list-ref p 7)) "\n"
-                     "    energias: 0 | daño: 0 | estado: normal\n")))
+                     "    energias: " (number->string (length (list-ref p 12))) ; En los 3 comentarios siguiente estan las modificaciones con respecto al codigo anterior
+                     " | daño: " (number->string (list-ref p 13))               ; 
+                     " | estado: " (list-ref p 14) "\n")))                      ; 
 
 ;descripcion: construye el string con la vista completa de un jugador
+;descripcion: construye el string con la vista completa de un jugador
 (define (format-jugador j num-jugador-solicitado num-jugador-actual)
-  (let* ((mostrar-mano? (= num-jugador-solicitado num-jugador-actual))
-         (mano (jugador-mano j))
-         (mazo-len (length (deck-cartas (jugador-mazo j))))
-         (premios-len (length (jugador-premios j)))
-         (descarte (jugador-descarte j))
-         (activo (jugador-activo j))
-         (banca (jugador-banca j)))
-    (string-append "=================================================\n"
-                   "JUGADOR " (number->string num-jugador-actual) ": " (jugador-nombre j) "\n"
-                   "cartas en mazo: " (number->string mazo-len) " disponibles\n"
-                   "cartas de premio: " (number->string premios-len) " ocultas\n"
-                   "cartas en mano (" (number->string (length mano)) "): "
-                   (if mostrar-mano?
-                       (string-append "\n  " (nombres-cartas-cola mano "") "\n")
-                       "ocultas\n")
-                   "pokemon activo:\n  " (format-pokemon activo)
-                   "banca:\n" (banca-cola banca "")
-                   "pila de descarte: " (nombres-cartas-cola descarte "") "\n"
-                   "=================================================\n")))
+  (let ((mostrar-mano? (= num-jugador-solicitado num-jugador-actual)))
+    (let ((mano (jugador-mano j))
+          (mazo-len (length (deck-cartas (jugador-mazo j))))
+          (premios-len (length (jugador-premios j)))
+          (descarte (jugador-descarte j))
+          (activo (jugador-activo j))
+          (banca (jugador-banca j)))
+      (string-append "=======================================================\n"
+                     "JUGADOR " (number->string num-jugador-actual) ": " (jugador-nombre j) "\n"
+                     "cartas en mazo: " (number->string mazo-len) " disponibles\n"
+                     "cartas de premio: " (number->string premios-len) " ocultas\n"
+                     "cartas en mano (" (number->string (length mano)) "): "
+                     (if mostrar-mano?
+                         (string-append "\n  " (nombres-cartas-cola mano "") "\n")
+                         "ocultas\n")
+                     "pokemon activo:\n  " (format-pokemon activo)
+                     "banca:\n" (banca-cola banca "")
+                     "pila de descarte: " (nombres-cartas-cola descarte "") "\n"
+                     "=================================================\n"))))
 
 ;funcion principal rf07
 

@@ -3,9 +3,6 @@
 ;TDA CARTA
 ;Energia3, entrenador 5, Pokemon 11
 
-
-
-
 (require "21056415-2base.rkt")
 (require "21056415-2TDA-Ataque.rkt") 
 
@@ -28,13 +25,14 @@
          card-ataques
          carta-pokemon?
          carta-energy?
-         carta-trainer?)
-
+         carta-trainer?
+         pokemon-energias
+         pokemon-dano
+         pokemon-estado
+         add-pokemon-energia)
 
 ;; Dom: tipoCarta (CARD-TYPE) X nombre (string) X argumentos-variables (. resto)
 ;; Rec: lista (representación del TDA Carta) o #f si falla la validación
-
-
 
 ;Recibe una cantidad X de  datos y dependiendo de de la cartidta, valida ciertas cosas
 (define (card tipoCarta nombre . resto)
@@ -86,14 +84,14 @@
                   (<= (length (list-ref resto 8)) 3)
                   (<= (length (list-ref resto 8)) 2)))
          
-         (append (list 'card tipoCarta nombre) resto)
+         ;Se le agregan internamente los campos para energias, dano y estado (RF11)
+         (append (list 'card tipoCarta nombre) resto (list '() 0 "normal"))
          #f)]
     [else #f]))
 
 
 ;; Dom:
 ;; Rec: booleano
-
 
 ;Funcion que tan solo verifica que esto sea una lista
 (define (card? c)
@@ -110,11 +108,7 @@
 (define (card-energia-elemento c) (if (and (card? c) (equal? (card-tipo c) 'energy)) (list-ref c 3) #f))
 ;En caso de ser carta entrenador, verifica que sea objetio o partidario
 
-
-
 ;Cada extractor trae su nombre, no explicare cada uno
-
-
 (define (card-trainer-subtipo c) (if (and (card? c) (equal? (card-tipo c) 'trainer)) (list-ref c 3) #f))
 
 (define (card-texto c) (if (and (card? c) (equal? (card-tipo c) 'trainer)) (list-ref c 4) #f))
@@ -140,7 +134,6 @@
 (define (card-ataques c) (if (and (card? c) (equal? (card-tipo c) 'pokemon)) (list-ref c 11) #f))
 
 
-
 ;Funciones que cree en mi RF01 para el TDA, sin embargo con la re-estructuracion que hice en el RF03 reemplazare el TDA carta pasado, por este
 ;Estas funciones las herede de ahi
 (define (carta-pokemon? c)
@@ -156,8 +149,21 @@
        (equal? (card-tipo c) 'trainer)))
 
 
+;RF11 (cambios) :c
+;Extrae la lista de energias asociadas al pokemon
+(define (pokemon-energias p) (if (carta-pokemon? p) (list-ref p 12) #f))
+;Extrae el dano acumulado del pokemon
+(define (pokemon-dano p) (if (carta-pokemon? p) (list-ref p 13) #f))
+;Extrae el estado actual del pokemon
+(define (pokemon-estado p) (if (carta-pokemon? p) (list-ref p 14) #f))
 
-
+;cambio tambien
+(define (add-pokemon-energia p energia)
+  (if (and (carta-pokemon? p) (carta-energy? energia))
+      (append (take p 12) 
+              (list (append (pokemon-energias p) (list energia))) 
+              (drop p 13))
+      #f))
 
 
 

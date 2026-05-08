@@ -20,27 +20,23 @@
          set-jugador-premios)
 
 #|
-debe guardar:
-- su nombre
-- su mazo
-- las cartas que tiene en mano
-- su criatura activa
-- su banca
-- cartas descartadas
-- premios
 
-representacion:
+
+representacion que utilizo en este caso:
 (list 'jugador nombre mazo mano activo banca descarte premios)
 |#
 
-;;constructor
+;constructor
 
 ;crea un jugador validando cada uno de sus componentes iniciales
 (define (make-jugador nombre mazo mano activo banca descarte premios)
-  (if (and (string? nombre)
-           (list? mazo)
-           (list? mano)
-           (or (carta-pokemon? activo) (null? activo)) ; <--- SE CAMBIO criatura? POR carta-pokemon?
+  (if (and (string? nombre) ;verifico que sea un string
+           (list? mazo) ;verifico que seea una lista
+
+           ;mismo proceso con todo
+           
+           (list? mano) 
+           (or (carta-pokemon? activo) (null? activo)) ;modificacion o correcion para el RF08
            (list? banca)
            (list? descarte)
            (list? premios))
