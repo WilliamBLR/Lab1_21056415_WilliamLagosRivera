@@ -1,0 +1,56 @@
+#lang racket
+
+
+
+(require "base_21056415_LagosRivera.rkt")
+(require "tda_carta_21056415_LagosRivera.rkt")
+
+(provide make-energia
+         energia?
+         energia-nombre
+         energia-tipo
+         energia->carta)
+
+
+;;Representacion:
+;;(list 'energia nombre tipo)
+;;
+;;Ejemplo:
+;;(list 'energia 'fire-energy 'fire)
+;;
+;;nombre: nombre de energia definido en ENERGY
+;;tipo: tipo elemental asociado a esa energia
+;;
+
+;;Constructorrr
+(define (make-energia nombre)
+  (let ((dato (assoc nombre ENERGY)))
+    (if dato
+        (list 'energia (car dato) (cdr dato))
+        #f)))
+
+;;Funcion de pertenencia
+(define (energia? e)
+  (and (list? e)
+       (= (length e) 3)
+       (equal? (car e) 'energia)
+       (assoc (cadr e) ENERGY)
+       (element-type? (caddr e))))
+
+;;Selectores
+(define (energia-nombre e)
+  (if (energia? e)
+      (cadr e)
+      #f))
+
+(define (energia-tipo e)
+  (if (energia? e)
+      (caddr e)
+      #f))
+;pequeña modificacion para hacer compatible con RF03
+(define (energia->carta e)
+  (if (energia? e)
+      (card 'energy 
+            (symbol->string (energia-nombre e)) 
+            (energia-tipo e))
+      #f))
